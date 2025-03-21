@@ -1,0 +1,22 @@
+# Mesh Network Node Discovery
+
+## How Do Nodes Get Their IPs?
+
+### 1. Manual Assignment
+
+-   If we manually set each node's IP, we need to distribute and maintain IP lists.
+-   This is a little impractical for dynamic networks where nodes join/leave frequently.
+
+### 2. Local IP Discovery
+
+-   Each node reads its own IP dynamically instead of us assigning it.
+-   They then broadcast their presence so others can discover them.
+
+### 3. Peer Discovery
+
+-   Nodes use **broadcast, multicast, or a discovery protocol** to find each other.
+-   Examples:
+    -   **UDP Broadcast** (e.g., `255.255.255.255` or local subnet)
+    -   **Multicast** (`224.0.0.X` for local groups)
+    -   **mDNS (Multicast DNS)** (`.local` domain)
+    -   **Wi-Fi Direct** (finds nearby devices automatically)

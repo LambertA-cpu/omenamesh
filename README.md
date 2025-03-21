@@ -1,1 +1,3 @@
 # omenamesh
+
+[Docs](./docs/)
