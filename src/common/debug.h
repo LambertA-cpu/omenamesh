@@ -1,4 +1,5 @@
 
+#include <stdio.h>
 #ifndef DEBUG
 #define DEBUG 1
 
@@ -56,11 +57,13 @@
 					color = RESET;                        \
 					break;                                \
 			}                                                     \
-			fprintf(stderr, "%s%s: %s:%d: " fmt "%s\n", color,    \
+			fprintf(stdout, "%s%s: %s:%d: " fmt "%s\n", color,    \
 				level_str, __FILE__, __LINE__, ##__VA_ARGS__, \
 				RESET);                                       \
 		}                                                             \
 	} while (0)
+
+#define INFO_(fmt, ...) OMENA_MESH_LOG(LOG_LEVEL_INFO, fmt, ##__VA_ARGS__)
 
 #define UNREACHABLE()                                                   \
 	do {                                                            \

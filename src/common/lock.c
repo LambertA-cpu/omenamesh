@@ -1,29 +1,28 @@
 #include "lock.h"
-#include "debug.h"
 #include "types.h"
 
-/*NOTE have a global manager for this to work so before main, initialize the
- * lock, disclamer IDK if that will work*/
-__CJLF_GENERICS lock_init(LockManager *manager) {
-	for (int i = 0; i < MAX_LOCKS; i++) {
-		atomic_store(&manager->locks[i].locked, false);
-	}
-	manager->request_queue.front = NULL;
-	manager->request_queue.rear = NULL;
-	atomic_store(&manager->request_queue.size, 0);
+LockManager *global_lock_manager = 0;
+
+GLOBAL_CONSTRUCTOR __CJLF_GENERICS lock_init() {
+	for (int i = 0; i < MAX_LOCKS; i++)
+		atomic_store(&global_lock_manager->locks[i].locked, false);
+
+	global_lock_manager->request_queue.front = Nil;
+	global_lock_manager->request_queue.rear = Nil;
+	global_lock_manager->no_acquired_locks = Nil;
+
+	atomic_store(&global_lock_manager->request_queue.size, Nil);
 }
 
+#include <assert.h>
 /* Acquire the lock with a callback and argument for queued requests */
 __CJLF_GENERICS acquire_lock(LockManager *manager,
 			     __CJLF_GENERICS (*callback)(__CJLF_GENERICS *arg),
 			     __CJLF_GENERICS *arg) {
-	OMENA_MESH_TODO(
-	    "keep count of the locks, in the lock manager have lock_count, "
-	    "this can help us assert before we try to get the lock and just "
-	    "queue it");
+	if (manager->no_acquired_locks >= MAX_LOCKS)
+		queue_lock_request(manager, callback, arg);
 
 	bool acquired = false; /*atomic?*/
-
 	/*spin & try to acquire a lock*/
 	for (int i = 0; i < MAX_LOCKS; i++) {
 		bool expected = false;
@@ -31,16 +30,14 @@ __CJLF_GENERICS acquire_lock(LockManager *manager,
 		    atomic_compare_exchange_strong(&manager->locks[i].locked,
 						   &expected, true)) {
 			acquired = true;
-			OMENA_MESH_LOG(1, "Lock %d acquired.\n", i);
+			manager->no_acquired_locks++;
 			return;
 		}
 	}
 
 	/*If no lock is available, queue the request */
-	if (!acquired) {
+	if (!acquired)
 		queue_lock_request(manager, callback, arg);
-		OMENA_MESH_LOG(1, "No locks available, request queued.\n");
-	}
 }
 
 /* Release a specific lock and process any pending requests in the queue */
@@ -53,9 +50,8 @@ __CJLF_GENERICS release_lock(LockManager *manager, int lock_id) {
 
 /* Check if a lock is currently held */
 bool is_locked(LockManager *manager, int lock_id) {
-	if (lock_id >= 0 && lock_id < MAX_LOCKS) {
+	if (lock_id >= 0 && lock_id < MAX_LOCKS)
 		return atomic_load(&manager->locks[lock_id].locked);
-	}
 	return false;
 }
 
@@ -67,23 +63,22 @@ __CJLF_GENERICS queue_lock_request(
 	    (LockRequestNode *)malloc(sizeof(LockRequestNode));
 	new_request->callback = callback;
 	new_request->arg = arg;
-	new_request->next = NULL;
+	new_request->next = Nil;
 
 	// Add the new request to the end of the queue
-	if (atomic_load(&manager->request_queue.size) == 0) {
+	if (atomic_load(&manager->request_queue.size) == 0)
 		manager->request_queue.front = new_request;
-	} else {
+	else
 		manager->request_queue.rear->next = new_request;
-	}
+
 	manager->request_queue.rear = new_request;
 	atomic_fetch_add(&manager->request_queue.size, 1);
 }
 
 /*Dequeue a lock request from the queue */
-
 LockRequestNode *dequeue_lock_request(LockManager *manager) {
 	if (atomic_load(&manager->request_queue.size) == 0) {
-		return NULL;
+		return Nil;
 	}
 
 	LockRequestNode *front_request = manager->request_queue.front;
@@ -96,7 +91,7 @@ LockRequestNode *dequeue_lock_request(LockManager *manager) {
 __CJLF_GENERICS process_lock_queue(LockManager *manager) {
 	if (atomic_load(&manager->request_queue.size) > 0) {
 		LockRequestNode *request = dequeue_lock_request(manager);
-		if (request != NULL) {
+		if (request != Nil) {
 			request->callback(request->arg);
 			free(request);
 		}

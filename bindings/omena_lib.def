@@ -1,3 +1,0 @@
-headers = ../bindings/omena.h
-libraryPaths = ../src
-linkerOpts = -L../src -lomena

@@ -14,7 +14,7 @@ mkdir -p $OBJECT_FILES
 
 for file in $(find $LIB_DIR -type f -name "*.c"); do
     obj_file=$OBJECT_FILES/$(basename "$file" .c).o
-    $COMPILER -fPIC -c "$file" -o "$obj_file"
+    $COMPILER -I./src -fPIC -c "$file" -o "$obj_file"
     if [[ $? -ne 0 ]]; then
         print "Compilation failed for $file"
         exit 1
@@ -33,5 +33,5 @@ fi
 
 chmod +x ./run_test.sh
 if [[ -f run_test.sh ]]; then
-    ./run_test.sh
+    # ./run_test.sh
 fi

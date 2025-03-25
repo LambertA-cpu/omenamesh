@@ -1,23 +1,44 @@
 #ifndef PACKET_H
 #define PACKET_H
 
-#define MAX_DATA_SIZE 1024 /*enough? */
-#define ADDRESS 16
+#include <netinet/in.h>
+#include "common/types.h"
+#define MAX_DATA_SIZE 1024 /* MTU? */
+#define ADDRESS INET_ADDRSTRLEN
 
+/*TODO, read about linkage w/ static*/
+static void set_nonblocking(int sock) {
+	int flags = fcntl(sock, F_GETFL, 0);
+	fcntl(sock, F_SETFL, flags | O_NONBLOCK);
+}
+
+/*for test*/
+#define PORT 8000
+
+i8__CJLF start_server_t();
+int connect_to_peer(const char *peer_ip);
+
+#define PACKET_MASK 0x7
+typedef enum {
 // Normal data packet
 #define PACKET_TYPE_DATA 0x01
+	NORMAL = PACKET_TYPE_DATA,
 // Initial handshake packet
 #define PACKET_TYPE_HANDSHAKE 0x02
+	HANDSHAKE,
 // Acknowledgment packet
 #define PACKET_TYPE_ACK 0x03
+	ACK,
 // Node discovery packet
 #define PACKET_TYPE_HELLO 0x04
+	HELLO,
 // Authentication request packet
 #define PACKET_TYPE_AUTH 0x05
+	AUTH,
 // Error notification packet
 #define PACKET_TYPE_ERROR 0x06
-
-#include "../common/types.h"
+	PACKET_ERROR
+} Packet_TYPE;
 
 typedef struct __packet {
 	/* Packet type */
@@ -32,16 +53,17 @@ typedef struct __packet {
 	u8__CJLF ttl;
 	/*Actual data length */
 	u16__CJLF payload_size;
-
-	/*so, hmm the max buf is 1024, figuring out how to setvbuf(sometimes we
-	 * need urgency)*/
+	/*payload*/
 	char data[MAX_DATA_SIZE];
 	/*queue the next packet*/
 	struct __packet *next;
 } Packet;
 
-/*queue packet*/
+/*Manage*/
+__CJLF_GENERICS deserialize_packet(const u8__CJLF *buffer, Packet *pkt);
+__CJLF_GENERICS serialize_packet(const Packet *pkt, u8__CJLF *buffer);
 
+/*queue packet*/
 typedef struct {
 	Packet *front;
 	Packet *rear;
@@ -49,7 +71,7 @@ typedef struct {
 } PacketQueue;
 
 /*packet queue*/
-OMENAMESH_API __CJLF_GENERICS enqueue_packet(PacketQueue *queue, Packet *pkt);
+OMENAMESH_API __CJLF_GENERICS queue_packet(PacketQueue *queue, Packet *pkt);
 OMENAMESH_API Packet *dequeue_packet(PacketQueue *queue);
 OMENAMESH_API __CJLF_GENERICS forward_packet(PacketQueue *queue, Packet *pkt);
 OMENAMESH_API __CJLF_GENERICS handle_packet(PacketQueue *queue,
@@ -62,14 +84,9 @@ typedef struct RoutingTable {
 	int hops;
 } RoutingTable;
 
-OMENAMESH_API __CJLF_GENERICS add_route(char *dest_ip,
-					char *next_hop,
-					int hops);
-
 #include <arpa/inet.h>
-#include <netinet/in.h>
+#include <sys/select.h>
 #include <sys/socket.h>
-#include "../common/debug.h"
-#include "../common/lock.h"
+#include "common/debug.h"
 
-#endif
+#endif /*   !packet.h*/

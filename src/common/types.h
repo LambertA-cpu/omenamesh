@@ -1,11 +1,16 @@
 
 #ifndef __CJLF_TYPES
 #define __CJLF_TYPES
-/*we have a global lock manager*/
-#define GLOBAL_MAIN __attribute__((constructor))
 
-#define OMENAMESH_API __attribute__((visibility("default")))
+#define Nil 0
+
+#define GLOBAL_CONSTRUCTOR __attribute__((__constructor__))
+#define AFTER __attribute__((__destructor__))
+
+#define OMENAMESH_API __attribute__((visibility("default"))) extern
 #define ARRAY_SIZE(arr) ((sizeof(arr)) / (sizeof(*arr)))
+#define CJLF_NULL (void *)0
+#define CJLF_FAILED_MEM_MAP (void *)-1
 
 /*mostly local & APIs that might change in the future*/
 #define OMENAMESH_API_T __attribute__((visibility("hidden")))
@@ -23,6 +28,8 @@ typedef long long i64__CJLF;
 typedef void __CJLF_GENERICS;
 
 /*common*/
+#include <errno.h>
+#include <fcntl.h>
 #include <malloc.h>  /*virtual mem*/
 #include <pthread.h> /*posix threads*/
 #include <stdbool.h> /*bool*/
@@ -31,4 +38,6 @@ typedef void __CJLF_GENERICS;
 #include <stdlib.h>
 #include <string.h> /*string*/
 #include <unistd.h>
+#define SUCCESS !true
+#define FAILURE !false
 #endif /*! __CJLF_TYPES*/

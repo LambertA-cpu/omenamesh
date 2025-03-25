@@ -1,15 +1,18 @@
-
 #include "packet.h"
+#include "common/lock.h"
+
+i8__CJLF is_packet_type(Packet_TYPE pType) {
+	return pType & PACKET_MASK;
+}
+
+static LockManager *packet_lock = 0;
 
 /* Mutex for synchronization (locking) */
 // static pthread_mutex_t packet_lock = PTHREAD_MUTEX_INITIALIZER;
-static LockManager *packet_lock = 0;
 
 /* Queue packet - Add a packet to the queue & keep the writing as atomic as
  * possible, Locking to prevent simultaneous packet handling */
-__CJLF_GENERICS enqueue_packet(PacketQueue *queue, Packet *pkt) {
-	lock_init(packet_lock);
-
+__CJLF_GENERICS queue_packet(PacketQueue *queue, Packet *pkt) {
 	acquire_lock(packet_lock, 0, 0);
 
 	if (queue->rear == NULL) {
@@ -42,7 +45,7 @@ Packet *dequeue_packet(PacketQueue *queue) {
 	return pkt;
 }
 
-#include "../common/debug.h"
+#include "common/debug.h"
 
 /* Forward packet - This function simulates sending/forwarding a packet */
 __CJLF_GENERICS forward_packet(PacketQueue *queue, Packet *pkt) {

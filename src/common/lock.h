@@ -74,15 +74,17 @@ typedef struct {
 typedef struct {
 	Lock locks[MAX_LOCKS];
 	LockRequestQueue request_queue;
+	i8__CJLF no_acquired_locks;
 } LockManager;
 
-extern LockManager global_lock_manager;
+extern LockManager *global_lock_manager;
 
 /*make the lock manager global*/
-OMENAMESH_API __attribute__((constructor)) __CJLF_GENERICS
-lock_init(LockManager *manager);
-OMENAMESH_API __CJLF_GENERICS
+GLOBAL_CONSTRUCTOR OMENAMESH_API __CJLF_GENERICS lock_init();
 
+__attribute__((__destructor__)) __CJLF_GENERICS destroy_lock();
+
+OMENAMESH_API __CJLF_GENERICS
 acquire_lock(LockManager *manager,
 	     __CJLF_GENERICS (*callback)(__CJLF_GENERICS *arg),
 	     __CJLF_GENERICS *arg);

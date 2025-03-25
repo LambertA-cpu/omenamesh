@@ -1,11 +1,30 @@
 #ifndef NET__H
 #define NET__H
 
+/*arr of found cap 10 */
+
+#include "common/types.h"
 #define MAX_NODES 10
 #include "packet.h"
 
+#define PING_TIMEOUT /*under 10 */ MAX_NODES
+#define MAX_NETWORKS PING_TIMEOUT
+
+typedef struct {
+	i8__CJLF ip[ADDRESS];
+} DiscoveredNetwork;
+
+extern i32__CJLF network_count;
+extern DiscoveredNetwork discovered[MAX_NODES];
+extern i32__CJLF clients[MAX_NODES];
+
 #define MAX_NEIGHBORS 10
 #define MAX_DATA_SIZE 1024
+
+/*POSIX*/
+OMENAMESH_API i32__CJLF dicsover_networks_around_me();
+
+OMENAMESH_API __CJLF_GENERICS send_udp_broadcast();
 
 typedef struct __mesh_node {
 	// established connection
@@ -35,13 +54,19 @@ typedef struct {
 
 /*EXPERIMENTAL*/
 
+OMENAMESH_API __CJLF_GENERICS init_graph_network(MeshGraph *graph,
+						 i8__CJLF vertixxx);
+
+OMENAMESH_API __CJLF_GENERICS handle_new_connection(int server_fd);
+OMENAMESH_API_T __CJLF_GENERICS handle_user_input();
+OMENAMESH_API __CJLF_GENERICS handle_client_data(int client_fd, int index);
 /**
  * Creates a new mesh node with the given IP and port.
  * @param ip - The IP address of the node.
  * @param port - The port number for the node.
  * @return Pointer to the created MeshNode.
  */
-OMENAMESH_API MeshNode *create_node(const char *ip, int port);
+OMENAMESH_API MeshNode *create_node(const i8__CJLF *ip, int port);
 
 /**
  * Adds a node to the mesh graph.
@@ -121,9 +146,10 @@ OMENAMESH_API __CJLF_GENERICS *mesh_daemon(__CJLF_GENERICS *arg);
 
 #include <ifaddrs.h>
 #include <netdb.h>
+#include <netinet/ip_icmp.h>
 #include <sys/socket.h>
 
 /*WIFI DIRECT*/
-__CJLF_GENERICS get_local_ip(char *buffer, size_t len);
+i32__CJLF get_local_ip(char *buffer, i64__CJLF len);
 
 #endif /* NET__H*/

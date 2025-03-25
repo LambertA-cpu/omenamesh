@@ -19,20 +19,17 @@ TEST_SOURCES=$(find test -name "spec_*.c")
 
 
 if [ -z "$TEST_SOURCES" ]; then
-    echo -e "${RED}No test files found in ./test directory!${RESET}"
+    echo -e "${RED}No test files found in test directory! ${RESET}"
     exit 1
 fi
 
 echo -e "${UNDERLINE}               COMPILING TESTS                              ${RESET}\n"
 
-
-#! move it to . 
-cp src/libomena.so .
-
+#! gcc -I./src -o build/serve test/spec_mesh.c -L./src -lomena
 if [[ -f src/libomena.so ]]; then
     for test_file in $TEST_SOURCES; do
         test_name=$(basename "$test_file" .c)
-        gcc "$test_file" -o "$BUILD_DIR/$test_name" $FLAGS -L. -lomena
+        gcc -I./src "$test_file" -o "$BUILD_DIR/$test_name" -L./src -lomena
         if [ $? -eq 0 ]; then
             echo -e "Compiled $test_name [ ${GREEN}OK${RESET} ]"
         else
@@ -42,20 +39,20 @@ if [[ -f src/libomena.so ]]; then
     done
 fi
 
-echo -e "\n${UNDERLINE}               RUNNING TESTS                              ${RESET}\n"
+echo -e "\n${UNDERLINE}               RUNNING TESTS                                ${RESET}\n"
 
 
 for test_exec in "$BUILD_DIR"/spec_*; do
     if [ -x "$test_exec" ]; then
-        echo -n "Running $(basename $test_exec)... "
+        echo -n "Running $(basename $test_exec)"
 
         if "$test_exec" > /dev/null 2>&1; then
-            echo -e "[ ${GREEN}${UNDERLINE}PASS${RESET} ]"
+            echo -e "   [${GREEN}${UNDERLINE}PASS${RESET}]"
         else
-            echo -e "[ ${RED}${UNDERLINE}FAIL${RESET} ]"
+            echo -e "  [${RED}${UNDERLINE}FAIL${RESET}]"
         fi
     fi
 done
 
-echo -e "${UNDERLINE}                                                           ${RESET}"
+echo -e "${UNDERLINE}                                                            ${RESET}\n"
 echo -e "${GREEN} All tests completed.${RESET}"
