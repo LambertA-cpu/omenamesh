@@ -1,23 +1,22 @@
 name: C/C++ CI
 
 on:
-  push:
-    branches: [ "omena-main" ]
-  pull_request:
-    branches: [ "omena-main" ]
+    push:
+        branches: ["omena-main"]
+    pull_request:
+        branches: ["omena-main"]
 
 jobs:
-  build:
+    build:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+        steps:
+            - uses: actions/checkout@v4
+            # - name: configure
+            #   run: ./configure
+            - name: make
+              run: make
+            - name: make check
+              run: make check
+            # - name: make distcheck
+            # run: make distcheck

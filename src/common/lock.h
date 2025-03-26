@@ -44,7 +44,7 @@
  */
 
 #include <stdatomic.h>
-#include "types.h"
+#include "common/types.h"
 
 #define MAX_LOCKS 10
 
@@ -77,7 +77,7 @@ typedef struct {
 	i8__CJLF no_acquired_locks;
 } LockManager;
 
-extern LockManager *global_lock_manager;
+extern LockManager global_lock_manager;
 
 /*make the lock manager global*/
 GLOBAL_CONSTRUCTOR OMENAMESH_API __CJLF_GENERICS lock_init();

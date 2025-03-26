@@ -1,17 +1,16 @@
 #include "lock.h"
-#include "types.h"
 
-LockManager *global_lock_manager = 0;
+LockManager global_lock_manager;
 
 GLOBAL_CONSTRUCTOR __CJLF_GENERICS lock_init() {
 	for (int i = 0; i < MAX_LOCKS; i++)
-		atomic_store(&global_lock_manager->locks[i].locked, false);
+		atomic_store(&global_lock_manager.locks[i].locked, false);
 
-	global_lock_manager->request_queue.front = Nil;
-	global_lock_manager->request_queue.rear = Nil;
-	global_lock_manager->no_acquired_locks = Nil;
+	global_lock_manager.request_queue.front = Nil;
+	global_lock_manager.request_queue.rear = Nil;
+	global_lock_manager.no_acquired_locks = Nil;
 
-	atomic_store(&global_lock_manager->request_queue.size, Nil);
+	atomic_store(&global_lock_manager.request_queue.size, Nil);
 }
 
 #include <assert.h>
@@ -50,6 +49,7 @@ __CJLF_GENERICS release_lock(LockManager *manager, int lock_id) {
 
 /* Check if a lock is currently held */
 bool is_locked(LockManager *manager, int lock_id) {
+	/*assert with no_acquired_locks - 1*/
 	if (lock_id >= 0 && lock_id < MAX_LOCKS)
 		return atomic_load(&manager->locks[lock_id].locked);
 	return false;

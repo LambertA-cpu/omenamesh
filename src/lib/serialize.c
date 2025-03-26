@@ -2,11 +2,11 @@
 #include "common/types.h"
 #include "lib/packet.h"
 
-__CJLF_GENERICS serialize_packet(const Packet *pkt, u8__CJLF *buffer) {
+__CJLF_GENERICS serialize_packet(const Packet *pkt, char *buffer) {
 	if (!pkt || !buffer)
 		return;
 
-	u8__CJLF *ptr = buffer;
+	char *ptr = buffer;
 
 	*ptr++ = pkt->type;
 
@@ -31,11 +31,11 @@ __CJLF_GENERICS serialize_packet(const Packet *pkt, u8__CJLF *buffer) {
 	return;
 }
 
-__CJLF_GENERICS deserialize_packet(const u8__CJLF *buffer, Packet *pkt) {
+__CJLF_GENERICS deserialize_packet(const char *buffer, Packet *pkt) {
 	if (!pkt || !buffer)
 		return;
 
-	const u8__CJLF *ptr = buffer;
+	const char *ptr = buffer;
 
 	pkt->type = *ptr++;
 
