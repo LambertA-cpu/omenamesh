@@ -1,6 +1,5 @@
 
-#include "common/types.h"
-#include "lib/packet.h"
+#include "packet.h"
 
 __CJLF_GENERICS serialize_packet(const Packet *pkt, char *buffer) {
 	if (!pkt || !buffer)

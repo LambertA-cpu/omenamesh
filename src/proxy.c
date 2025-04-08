@@ -1,12 +1,13 @@
 
 
-#include "common/types.h"
-#include "lib/net.h"
+#include "net.h"
+#include "types.h"
 
 /*Radio */
 
 DiscoveredNetwork discovered[MAX_NETWORKS];
 i32__CJLF discovered_count = 0;
+i32__CJLF network_count = 0;
 
 /*ICMP checksum*/
 u16__CJLF checksum(__CJLF_GENERICS *b, int len) {

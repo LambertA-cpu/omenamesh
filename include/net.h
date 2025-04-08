@@ -3,7 +3,7 @@
 
 /*arr of found cap 10 */
 
-#include "common/types.h"
+#include "types.h"
 #define MAX_NODES 10
 #include "packet.h"
 

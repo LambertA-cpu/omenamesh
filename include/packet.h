@@ -2,7 +2,7 @@
 #define PACKET_H
 
 #include <netinet/in.h>
-#include "common/types.h"
+#include "types.h"
 #define MAX_DATA_SIZE 1024 /* MTU? */
 #define ADDRESS INET_ADDRSTRLEN
 
@@ -87,6 +87,8 @@ typedef struct RoutingTable {
 #include <arpa/inet.h>
 #include <sys/select.h>
 #include <sys/socket.h>
-#include "common/debug.h"
 
+#include "debug.h"
+
+#include "lock.h"
 #endif /*   !packet.h*/

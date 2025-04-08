@@ -1,7 +1,5 @@
 
-#include "common/lock.h"
-#include "common/types.h"
-#include "lib/net.h"
+#include "net.h"
 #include "packet.h"
 
 #define BROADCAST_PORT PORT

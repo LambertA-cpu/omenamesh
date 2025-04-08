@@ -1,16 +1,18 @@
 #include "lock.h"
+#include "common.h"
 
-LockManager global_lock_manager;
+LockManager *global_lock_manager = 0;
 
 GLOBAL_CONSTRUCTOR __CJLF_GENERICS lock_init() {
+	global_lock_manager = xmalloc(sizeof(*global_lock_manager));
 	for (int i = 0; i < MAX_LOCKS; i++)
-		atomic_store(&global_lock_manager.locks[i].locked, false);
+		atomic_store(&global_lock_manager->locks[i].locked, false);
 
-	global_lock_manager.request_queue.front = Nil;
-	global_lock_manager.request_queue.rear = Nil;
-	global_lock_manager.no_acquired_locks = Nil;
+	global_lock_manager->request_queue.front = Nil;
+	global_lock_manager->request_queue.rear = Nil;
+	global_lock_manager->no_acquired_locks = Nil;
 
-	atomic_store(&global_lock_manager.request_queue.size, Nil);
+	atomic_store(&global_lock_manager->request_queue.size, Nil);
 }
 
 #include <assert.h>

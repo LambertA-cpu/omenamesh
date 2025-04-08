@@ -1,11 +1,10 @@
 #include "packet.h"
-#include "common/lock.h"
 
 i8__CJLF is_packet_type(Packet_TYPE pType) {
 	return pType & PACKET_MASK;
 }
 
-static LockManager *packet_lock = 0;
+static LockManager *packet_lock;
 
 /* Mutex for synchronization (locking) */
 // static pthread_mutex_t packet_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -45,7 +44,7 @@ Packet *dequeue_packet(PacketQueue *queue) {
 	return pkt;
 }
 
-#include "common/debug.h"
+#include "debug.h"
 
 /* Forward packet - This function simulates sending/forwarding a packet */
 __CJLF_GENERICS forward_packet(PacketQueue *queue, Packet *pkt) {
