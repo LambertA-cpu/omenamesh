@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Omena mesh</string>
+    <string name="texting_box">Type a message</string>
+    <string name="send_bttn">Send</string>
+    <string name="view_network_info_bttn">View Network Info</string>
+    <string name="messages_will_appear_here_hint">Messages will appear here...</string>
+    <string name="message_input_field">Message input field</string>
+    <string name="latency">Latency</string>
+    <string name="device_name">Device Name</string>
+    <string name="status">Status</string>
+</resources>
